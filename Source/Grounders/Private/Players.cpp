@@ -369,19 +369,16 @@ FVector APlayers::FindLaunchVelocity()
         if (wallRunSide == EWallRunSide::Left)
         {
             LaunchDirection = FVector::CrossProduct(FVector(0, 0, 1), (WallRunDirection) * 2);
-            //LaunchDirection = FVector::CrossProduct(FVector(0, 0, 1), (WallRunDirection));
             return GetCharacterMovement()->JumpZVelocity * LaunchDirection;
         }
         else
         {
             LaunchDirection = FVector::CrossProduct(FVector(0, 0, -1), (WallRunDirection) * 2);
-            //LaunchDirection = FVector::CrossProduct(FVector(0, 0, 1), (WallRunDirection));
             return GetCharacterMovement()->JumpZVelocity * LaunchDirection;
         }
     }
-    if (bWallClimbLaunch) //set if previous movement state was wall climbing
+    if (bWallClimbLaunch)
     {
-        //LAUNCH OPPOSITE DIRECTION OF WALL???
         LaunchDirection = (this->GetActorForwardVector() * 5) + FVector(0, 0, 1);
         return GetCharacterMovement()->JumpZVelocity * LaunchDirection;
     }
@@ -430,7 +427,6 @@ void APlayers::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPri
 void APlayers::FBeginWallRun()
 {
     isWallRunning = true;
-    //GetCharacterMovement()->Velocity.Z = GetCharacterMovement()->Velocity.Z * 1.01;
     GetCharacterMovement()->Velocity.Z = 0;
     GetCharacterMovement()->GravityScale = 0;
     GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0, 0, 1));

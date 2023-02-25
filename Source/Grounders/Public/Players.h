@@ -93,7 +93,7 @@
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
         bool isSliding;
 
-    UPROPERTY(VisibleAnywhere)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
         bool isCrouching;
 
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
