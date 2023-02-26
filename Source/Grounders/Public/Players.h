@@ -213,7 +213,6 @@
     void OnMovementStateChanged(TEnumAsByte<EMovementStates> PrevMovementState);
     bool CanStand();
     bool CanSprint();
-    UFUNCTION(BlueprintImplementableEvent)
     void QuitGame();
 
     //Movement Functions

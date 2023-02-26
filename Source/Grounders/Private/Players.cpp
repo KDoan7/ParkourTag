@@ -117,7 +117,7 @@ void APlayers::Tick(float DeltaTime)
     {
         GetCharacterMovement()->MaxWalkSpeed = sprintSpeed;
     }
-    if (GetCharacterMovement()->IsMovingOnGround())
+    if (GetCharacterMovement()->IsMovingOnGround() && currentJumps != 0)
     {
         currentJumps = 0;
     }
@@ -146,10 +146,11 @@ void APlayers::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
     PlayerInputComponent->BindAction("QuitGame", IE_Pressed, this, & APlayers::QuitGame);
 }
 
-//void APlayers::QuitGame()
-//{
-//    //UKismetSystemLibrary::quit;
-//}
+void APlayers::QuitGame()
+{
+    //CHANGE THIS TO LOCAL PLAYER
+   UKismetSystemLibrary::QuitGame(GetWorld(),UGameplayStatics::GetPlayerController(GetWorld(),0),EQuitPreference::Quit, true);
+}
 
 void APlayers::QuickTurn()
 {
@@ -402,11 +403,13 @@ void APlayers::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPri
     FVector direction;
 
     FString teststring = FString::SanitizeFloat(FVector2D::DotProduct(FVector2D(Hit.ImpactNormal), FVector2D(GetActorForwardVector())));
+
     if (currentMovementState == EMovementStates::Sliding && FVector2D::DotProduct(FVector2D(Hit.ImpactNormal), FVector2D(GetActorForwardVector())) < -0.9 && FVector2D::DotProduct(FVector2D(Hit.ImpactNormal), FVector2D(GetActorForwardVector())) > -1)
     {
         GetCharacterMovement()->Velocity = FVector(0, 0, 0);
     }
-    if (FVector2D::DotProduct(FVector2D(Hit.ImpactNormal), FVector2D(GetActorForwardVector())) < -0.9 && FVector2D::DotProduct(FVector2D(Hit.ImpactNormal), FVector2D(GetActorForwardVector())) > -1 && GetCharacterMovement()->IsFalling() && !isCrouching && !isSliding && !isWallClimbing)
+
+    if (FVector2D::DotProduct(FVector2D(Hit.ImpactNormal), FVector2D(GetActorForwardVector())) < -0.9 && FVector2D::DotProduct(FVector2D(Hit.ImpactNormal), FVector2D(GetActorForwardVector())) > -1 && GetCharacterMovement()->IsFalling() && !isCrouching && !isSliding && !isWallClimbing && UGameplayStatics::GetPlayerController(GetWorld(), 0)->IsInputKeyDown(EKeys::W))
     {
         SetMovementState(EMovementStates::WallClimbing);
     }
