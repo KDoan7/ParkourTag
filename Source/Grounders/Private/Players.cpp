@@ -32,12 +32,18 @@ APlayers::APlayers()
     HitBox->OnComponentHit.AddDynamic(this, &APlayers::OnHit);
 
     SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComp"));
-    SpringArmComp->SetupAttachment(GetMesh());
+    SpringArmComp->SetupAttachment(GetMesh(), FName("head"));
     SpringArmComp->bUsePawnControlRotation = true;
     SpringArmComp->TargetArmLength = 0;
 
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
     Camera->SetupAttachment(SpringArmComp);
+
+    //DEFINED IN BP BELOW DOESNT OFFSET BUT DOES ATTACH TO HEAD BONE IT SEEMS
+    //SpringArmComp->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, FName("head"));
+    //SpringArmComp->SetWorldLocation(GetMesh()->GetSocketLocation(FName("head")) + FVector(10,0,0));
+
+  
 
     this->BeginWallRunFunctions.AddUObject(this, &APlayers::FBeginWallRun);
     this->EndWallRunReason.AddUObject(this, &APlayers::FEndWallRun);
@@ -106,6 +112,7 @@ void APlayers::Tick(float DeltaTime)
     CrouchTimeline.TickTimeline(DeltaTime);
     WallClimbEndTimeLine.TickTimeline(DeltaTime);
 
+
     if (currentMovementState == EMovementStates::Sprinting && GetCharacterMovement()->Velocity.Length() > sprintSpeed)
     {
         if (GetCharacterMovement()->Velocity.Length() < GetCharacterMovement()->MaxWalkSpeed)
@@ -125,6 +132,12 @@ void APlayers::Tick(float DeltaTime)
     {
         ResolveMovement();
     }
+    
+    //GEngine->AddOnScreenDebugMessage(9, 1, FColor::Yellow, FString::Printf(TEXT("Current Movement State: %s"), *UEnum::GetValueAsString(currentMovementState)));
+    //GEngine->AddOnScreenDebugMessage(10, 1, FColor::Magenta, FString::Printf(TEXT("Current Speed: %f"), GetCharacterMovement()->Velocity.Length()));
+    //GEngine->AddOnScreenDebugMessage(11, 1, FColor::Blue, FString::Printf(TEXT("Wall Climb Speed: %f"), wallClimbHeight));
+    //GEngine->AddOnScreenDebugMessage(12, 1, FColor::Green, FString::Printf(TEXT("Is Wall Running?: %b"), isWallRunning));
+    //GEngine->AddOnScreenDebugMessage(13, 1, FColor::Orange, FString::Printf(TEXT("Is Wall Climbing?: %b"), isWallClimbing));
 }
 
 // Called to bind functionality to input
@@ -322,7 +335,7 @@ void APlayers::WallClimb()
 
 void APlayers::FEndWallClimbTimeline()
 {
-    this->SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + WallClimbEndCurve->GetFloatValue(WallClimbTimeLine.GetPlaybackPosition())));
+    this->SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + WallClimbEndCurve->GetFloatValue(WallClimbTimeLine.GetPlaybackPosition() + (HitBox->GetScaledCapsuleHalfHeight() * 2))));
 }
 
 
@@ -403,6 +416,8 @@ void APlayers::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPri
     FVector direction;
 
     FString teststring = FString::SanitizeFloat(FVector2D::DotProduct(FVector2D(Hit.ImpactNormal), FVector2D(GetActorForwardVector())));
+
+
 
     if (currentMovementState == EMovementStates::Sliding && FVector2D::DotProduct(FVector2D(Hit.ImpactNormal), FVector2D(GetActorForwardVector())) < -0.9 && FVector2D::DotProduct(FVector2D(Hit.ImpactNormal), FVector2D(GetActorForwardVector())) > -1)
     {

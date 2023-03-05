@@ -21,7 +21,7 @@
  class UCapsuleComponent;
  class USphereComponent;
  class UCurveFloat;
-
+ class UGrapplingComponent;
 
  UCLASS()
  class GROUNDERS_API APlayers : public ACharacter
@@ -81,10 +81,10 @@
  	UPROPERTY(EditAnywhere)
  		float sprintIncrease;
 	
- 	UPROPERTY(EditAnywhere)
+ 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
  		int maxJumps;
 
- 	UPROPERTY(VisibleAnywhere)
+ 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
  		int currentJumps;
 
     UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
@@ -178,6 +178,7 @@
 
     UPROPERTY(EditAnywhere, Category = "WallClimb")
         UCurveFloat* WallClimbEndCurve;
+
 
  protected:
  	// Called when the game starts or when spawned
