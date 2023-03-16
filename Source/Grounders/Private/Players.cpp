@@ -43,8 +43,6 @@ APlayers::APlayers()
     //SpringArmComp->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, FName("head"));
     //SpringArmComp->SetWorldLocation(GetMesh()->GetSocketLocation(FName("head")) + FVector(10,0,0));
 
-  
-
     this->BeginWallRunFunctions.AddUObject(this, &APlayers::FBeginWallRun);
     this->EndWallRunReason.AddUObject(this, &APlayers::FEndWallRun);
 
@@ -210,17 +208,17 @@ void APlayers::EndSprint()
 }
 
 void APlayers::FBeginCrouch()
-{
-        isCrouching = true;
-        BeginCrouchFunctions.Broadcast();
-        
-        //if (currentMovementState == EMovementStates::Sprinting &&!isSliding || GetCharacterMovement()->Velocity.Length() >= (walkSpeed + 300) && !isSliding)
-        if (currentMovementState == EMovementStates::Sprinting && !isSliding && GetCharacterMovement()->Velocity.Length() >= (walkSpeed + 400))
+{       
+    //isCrouching = true;
+    //BeginCrouchFunctions.Broadcast();
+        //get rid of the dot product stuff if want to be able to slide forward while running backwards again
+        if (currentMovementState == EMovementStates::Sprinting && !isSliding && GetCharacterMovement()->Velocity.Length() >= (walkSpeed + 400) && FVector::DotProduct(GetActorForwardVector(),GetCharacterMovement()->Velocity.GetSafeNormal()) > 0)
         { 
-                SetMovementState(EMovementStates::Sliding);
-        }
-        if (currentMovementState == EMovementStates::Walking)
+            SetMovementState(EMovementStates::Sliding);
+        } 
+        else
         {
+            isCrouching = true;
             SetMovementState(EMovementStates::Crouching);
         }
 }
@@ -253,7 +251,7 @@ void APlayers::FUpdateCrouch()
 void APlayers::FBeginSlide()
 {
     isSliding = true;
-    UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetIgnoreMoveInput(true); 
+    UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetIgnoreMoveInput(true);
     BeginCameraTiltFunctions.Broadcast();
     SlideTimeline.Play();
 }
@@ -445,7 +443,8 @@ void APlayers::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPri
 void APlayers::FBeginWallRun()
 {
     isWallRunning = true;
-    GetCharacterMovement()->Velocity.Z = 0;
+    //GetCharacterMovement()->Velocity.Z = 0;
+    GetCharacterMovement()->Velocity.Z = GetCharacterMovement()->Velocity.Z * 0.95;
     GetCharacterMovement()->GravityScale = 0;
     GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0, 0, 1));
     BeginCameraTiltFunctions.Broadcast();
@@ -604,6 +603,11 @@ void APlayers::SetMovementState(TEnumAsByte<EMovementStates> NewMovementState)
         switch (currentMovementState)
         {
         case EMovementStates::Sprinting:
+            //potential other solution to bug below but it snaps too much for my liking but could be safer?
+            //CrouchTimeline.PlayFromStart();
+            //CrouchTimeline.Stop();
+            //get rid set timeline length if this causes problems with crouching looking weird. this line fixes rapidly switching between crouching and sprinitng if you sprint backwards and crouch
+            CrouchTimeline.SetTimelineLength(0.1);
             EndCrouchFunctions.Broadcast();
             break;
         case EMovementStates::Crouching:
@@ -716,7 +720,7 @@ bool APlayers::CanStand()
 }
 bool APlayers::CanSprint()
 {
-    if (isSprinting && CanStand() || GetCharacterMovement()->Velocity.Length() >= sprintSpeed - 100 && CanStand())
+    if (isSprinting && CanStand() || GetCharacterMovement()->Velocity.Length() >= sprintSpeed - 600 && CanStand())
     {
         return true;
     }
