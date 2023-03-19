@@ -128,6 +128,7 @@
     bool CanSlide;
     bool MinSlideLengthReached;
     bool bWallClimbLaunch;
+    bool bWallRunLaunch;
     
     UPROPERTY(EditAnywhere)
         float SlideResetTimer;
