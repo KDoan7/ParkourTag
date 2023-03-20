@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Components/TimelineComponent.h"
 
  //GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Cyan, FString::Printf(TEXT("*IsSliding")));
 // Sets default values
@@ -110,7 +111,6 @@ void APlayers::Tick(float DeltaTime)
     CrouchTimeline.TickTimeline(DeltaTime);
     WallClimbEndTimeLine.TickTimeline(DeltaTime);
 
-
     if (currentMovementState == EMovementStates::Sprinting && GetCharacterMovement()->Velocity.Length() > sprintSpeed)
     {
         if (GetCharacterMovement()->Velocity.Length() < GetCharacterMovement()->MaxWalkSpeed)
@@ -126,7 +126,7 @@ void APlayers::Tick(float DeltaTime)
     {
         currentJumps = 0;
     }
-    if (currentMovementState == EMovementStates::Crouching && CanStand() || currentMovementState == EMovementStates::Sprinting && GetCharacterMovement()->Velocity.Length() <= walkSpeed) //GetCharacterMovement()->IsMovingOnGround()
+    if (currentMovementState == EMovementStates::Crouching && CanStand() || currentMovementState == EMovementStates::Sprinting && GetCharacterMovement()->Velocity.Length() <= walkSpeed || GetCharacterMovement()->Velocity.Length() >= (sprintSpeed - 600) && currentMovementState != EMovementStates::Sprinting && currentMovementState != EMovementStates::Sliding)
     {
         ResolveMovement();
     }
@@ -443,10 +443,10 @@ void APlayers::FBeginWallRun()
     isWallRunning = true;
     bWallRunLaunch = true;
     //GetCharacterMovement()->Velocity.Z = 0;
-    if (GetCharacterMovement()->Velocity.Z < 0)
-    {
-        GetCharacterMovement()->Velocity.Z = GetCharacterMovement()->Velocity.Z * 0.95;
-    }
+    //if (GetCharacterMovement()->Velocity.Z < 0)
+    //{
+    //    GetCharacterMovement()->Velocity.Z = GetCharacterMovement()->Velocity.Z * 0.95;
+    //}
 
     GetCharacterMovement()->GravityScale = 0;
     GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0, 0, 1));

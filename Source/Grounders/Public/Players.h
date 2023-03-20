@@ -237,6 +237,7 @@
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
         class UCameraComponent* Camera;
 
+
  	const void FindRunDirectionAndSide(FVector wallNormal, TEnumAsByte<EWallRunSide>* outLocalSide, FVector* outReturnVector)
  	{
  		if (FVector2D::DotProduct(FVector2D(wallNormal), FVector2D(GetActorRightVector())) > 0)
