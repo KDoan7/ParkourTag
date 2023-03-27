@@ -443,10 +443,11 @@ void APlayers::FBeginWallRun()
     isWallRunning = true;
     bWallRunLaunch = true;
     //GetCharacterMovement()->Velocity.Z = 0;
-    //if (GetCharacterMovement()->Velocity.Z < 0)
-    //{
-    //    GetCharacterMovement()->Velocity.Z = GetCharacterMovement()->Velocity.Z * 0.95;
-    //}
+    if (GetCharacterMovement()->Velocity.Z < 0)
+    {
+        //GetCharacterMovement()->Velocity.Z = GetCharacterMovement()->Velocity.Z * 0.95;
+        GetCharacterMovement()->Velocity.Z = 0;
+    }
 
     GetCharacterMovement()->GravityScale = 0;
     GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0, 0, 1));
