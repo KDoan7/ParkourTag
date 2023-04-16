@@ -143,21 +143,29 @@
     bool isGrappling;
     float StandingCapsuleHalfHeight;
     float StandingCameraZOffset;
-    UPROPERTY(EditAnywhere)
-    float walkSpeed;
-    UPROPERTY(EditAnywhere)
-    float crouchSpeed;
     bool isSprinting;
+
     UPROPERTY(EditAnywhere)
-    float slideSpeed;
+        float walkSpeed;
+
     UPROPERTY(EditAnywhere)
-    float minSlideLength;
+        float crouchSpeed;
+        
+    UPROPERTY(EditAnywhere)
+        float slideSpeed;
+
+    UPROPERTY(EditAnywhere)
+        float minSlideLength;
+
     UPROPERTY(BlueprintReadOnly)
         float wallClimbHeight;
+
     UPROPERTY(BlueprintReadWrite)
         float currentWallClimbHeight;
+
     UPROPERTY(BlueprintReadOnly)
         FString prevWallClimbWall;
+
     UPROPERTY(BlueprintReadOnly)
         FString currentWallClimbWall;
 

@@ -40,10 +40,6 @@ APlayers::APlayers()
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
     Camera->SetupAttachment(SpringArmComp);
 
-    //DEFINED IN BP BELOW DOESNT OFFSET BUT DOES ATTACH TO HEAD BONE IT SEEMS
-    //SpringArmComp->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, FName("head"));
-    //SpringArmComp->SetWorldLocation(GetMesh()->GetSocketLocation(FName("head")) + FVector(10,0,0));
-
     this->BeginWallRunFunctions.AddUObject(this, &APlayers::FBeginWallRun);
     this->EndWallRunReason.AddUObject(this, &APlayers::FEndWallRun);
 
@@ -161,7 +157,6 @@ void APlayers::QuickTurn()
 {
     SpringArmComp->bEnableCameraRotationLag = true;
     SpringArmComp->CameraRotationLagSpeed = 10;
-    //UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetControlRotation(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetControlRotation() + FRotator(0, 180, 0));
     this->GetController()->SetControlRotation(GetControlRotation() + FRotator(0, 180, 0));
     FTimerHandle TimerHandle;
     GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
@@ -310,23 +305,19 @@ void APlayers::WallClimb()
     FHitResult OutHit;
     FCollisionQueryParams CollisionParams;
     CollisionParams.AddIgnoredActor(this->GetOwner());
-    //DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 1, 0, 1);
     bool isHit = GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams);
     
     
 
     if (isHit)
     {
-        //UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetIgnoreMoveInput(true);
         GetCharacterMovement()->Velocity = FVector(0,0,0);
         this->SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + (wallClimbHeight)));
     }
     else
     {
         EndWallClimbFunctions.Broadcast();
-        //this->SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + (GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 2)));
     }
-   //UGameplayStatics::GetPlayerController(GetWorld(), 0)->SetIgnoreMoveInput(false);
 }
 
 void APlayers::FEndWallClimbTimeline()
@@ -352,7 +343,7 @@ void APlayers::Jump()
 
         if (currentMovementState != EMovementStates::Sliding)
         {
-            if (bWallRunLaunch || isWallClimbing && currentJumps < maxJumps) //isWallRunning
+            if (bWallRunLaunch || isWallClimbing && currentJumps < maxJumps)
             {
                 ACharacter::LaunchCharacter(FindLaunchVelocity(), false, true);
             }
@@ -442,7 +433,6 @@ void APlayers::FBeginWallRun()
 {
     isWallRunning = true;
     bWallRunLaunch = true;
-    //GetCharacterMovement()->Velocity.Z = 0;
     if (GetCharacterMovement()->Velocity.Z < 0)
     {
         //GetCharacterMovement()->Velocity.Z = GetCharacterMovement()->Velocity.Z * 0.95;
@@ -484,7 +474,6 @@ void APlayers::UpdateWallRun()
 
         CollisionParams.AddIgnoredActor(this->GetOwner());
 
-        // DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 1, 0, 1);
         bool isHit = GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams);
         
         if (isHit && !isFacingWall && !isCrouching && !isSliding)
@@ -517,7 +506,6 @@ void APlayers::FEndWallRun()
     GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
         {
             bWallRunLaunch = false;
-            //isWallRunning = false;
         }, 0.1, false);
     GetCharacterMovement()->GravityScale = 1;
     GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0, 0, 0));
@@ -715,7 +703,6 @@ bool APlayers::CanStand()
         TArray<FHitResult> OutHit;
         FCollisionQueryParams CollisionParams;
         CollisionParams.AddIgnoredActor(this->GetOwner());
-        //DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 1, 0, 1);
         bool isHit = GetWorld()->LineTraceMultiByChannel(OutHit, start, end, ECC_Visibility, CollisionParams);
         if (!isHit)
         {
