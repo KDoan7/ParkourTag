@@ -10,4 +10,6 @@ Bouncing ball on the top of the map is a grappling pickup. End idea is you can o
 
 Jumping, sliding or pressing the grappling hook button while the grappling hook is active will cancel the hook. Can be used to gain momentum or get through tight areas.
 
-C++ code is in Source/Grounders/Private/Players
+C++ code is in Source/Grounders/Private/Players. Rest of the coding is done in blueprints.
+
+Blueprint codes can be found in Content/GameModes/BP_GameModes, Content/GameStates/TagGameState, Content/GrapplingHook/GrapplingComponent, Content/GrapplingHook/BP_GrapplingHook, Content/HUD/Hud2, Content/HUD/Winner, Content/Pickups/GrapplingHookPickup, Content/PlayersOrCharacters/BP_Players, 
